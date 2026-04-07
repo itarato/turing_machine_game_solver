@@ -6,9 +6,9 @@ from lib.solver import *
 
 class Rule:
     def __init__(self):
-        self.exhausted = False
+        pass
 
-    def analyze(self, secret: int, guess: int):
+    def analyze(self, solver: Solver, guess: int):
         raise NotImplementedError
 
 
@@ -37,14 +37,87 @@ class MidpointOrdering(Rule):
         eliminator_fn = self.make_eliminator_fn(guess_ord, ord_match)
         eliminate(solver.available, eliminator_fn)
 
-        self.exhausted = True
+    def make_eliminator_fn(
+        self,
+        guess_ord: int,
+        ord_match: bool,
+    ) -> Callable[[int], bool]:
+        return (
+            lambda n: (comp(digit_value(n, self.digit), self.midpoint) == guess_ord)
+            ^ ord_match
+        )
+
+
+# Cards 5 to 7
+# To pass this test, find if the number has to be even
+# (2 or 4) or odd (1, 3, or 5).
+class EvenOdd(Rule):
+    def __init__(self, digit: int):
+        super().__init__()
+        self.digit = digit
+
+    def analyze(self, solver, guess):
+        secret_digit = digit_value(solver.secret, self.digit)
+        guess_digit = digit_value(guess, self.digit)
+
+        secret_odd_or_even = secret_digit % 2
+        guess_odd_or_even = guess_digit % 2
+        odd_or_even_match = secret_odd_or_even == guess_odd_or_even
+
+        eliminator_fn = self.make_eliminator_fn(guess_odd_or_even, odd_or_even_match)
+        eliminate(solver.available, eliminator_fn)
+
+    def make_eliminator_fn(
+        self,
+        guess_odd_or_even: int,
+        odd_or_even_match: bool,
+    ) -> Callable[[int], bool]:
+        return (
+            lambda n: (digit_value(n, self.digit) % 2 == guess_odd_or_even)
+            ^ odd_or_even_match
+        )
+
+
+# Cards 11 to 13
+# These cards work similarly to cards 2 to 4, but instead of
+# comparing a number in your proposal to another specific
+# number, it is comparing two numbers within your proposal.
+# For example, the number with the number.
+# Watch out! If you get if your proposal is 3 and 3 ,
+# this does NOT mean that the numbers are 3, just that they
+# have to be the same.
+class DigitOrdering(Rule):
+    def __init__(self, digit_lhs: int, digit_rhs: int):
+        super().__init__()
+        self.digit_lhs = digit_lhs
+        self.digit_rhs = digit_rhs
+
+    def analyze(self, solver, guess):
+        secret_ord = comp(
+            digit_value(solver.secret, self.digit_lhs),
+            digit_value(solver.secret, self.digit_rhs),
+        )
+        guess_ord = comp(
+            digit_value(guess, self.digit_lhs),
+            digit_value(guess, self.digit_rhs),
+        )
+        ord_match = secret_ord == guess_ord
+
+        eliminator_fn = self.make_eliminator_fn(guess_ord, ord_match)
+        eliminate(solver.available, eliminator_fn)
 
     def make_eliminator_fn(
         self,
         guess_ord: int,
-        ord_match: bool,  # Eg.: False
+        ord_match: bool,
     ) -> Callable[[int], bool]:
         return (
-            lambda n: (comp(digit_value(n, self.digit), self.midpoint) == guess_ord)
+            lambda n: (
+                comp(
+                    digit_value(n, self.digit_lhs),
+                    digit_value(n, self.digit_rhs),
+                )
+                == guess_ord
+            )
             ^ ord_match
         )

@@ -8,8 +8,23 @@ class Rule:
     def __init__(self):
         pass
 
-    def analyze(self, solver: Solver, guess: int):
+    #
+    # The eval computation of the card.
+    #
+    def computation(self, value: int) -> int:
         raise NotImplementedError
+
+    #
+    # The main entrypoint to analyse a guess.
+    #
+    def analyze(self, solver: Solver, guess: int):
+        secret_result = self.computation(solver.secret)
+        guess_result = self.computation(guess)
+        result_match = secret_result == guess_result
+        eliminate(
+            solver.available,
+            lambda n: (self.computation(n) == guess_result) ^ result_match,
+        )
 
 
 # Cards 2 to 4
@@ -26,26 +41,8 @@ class MidpointOrdering(Rule):
         self.midpoint = midpoint
         self.digit = digit
 
-    def analyze(self, solver: Solver, guess: int):
-        secret_digit = digit_value(solver.secret, self.digit)
-        guess_digit = digit_value(guess, self.digit)
-
-        secret_ord = comp(secret_digit, self.midpoint)
-        guess_ord = comp(guess_digit, self.midpoint)
-        ord_match = secret_ord == guess_ord
-
-        eliminator_fn = self.make_eliminator_fn(guess_ord, ord_match)
-        eliminate(solver.available, eliminator_fn)
-
-    def make_eliminator_fn(
-        self,
-        guess_ord: int,
-        ord_match: bool,
-    ) -> Callable[[int], bool]:
-        return (
-            lambda n: (comp(digit_value(n, self.digit), self.midpoint) == guess_ord)
-            ^ ord_match
-        )
+    def computation(self, value) -> int:
+        return comp(digit_value(value, self.digit), self.midpoint)
 
 
 # Cards 5 to 7
@@ -56,26 +53,8 @@ class EvenOdd(Rule):
         super().__init__()
         self.digit = digit
 
-    def analyze(self, solver, guess):
-        secret_digit = digit_value(solver.secret, self.digit)
-        guess_digit = digit_value(guess, self.digit)
-
-        secret_odd_or_even = secret_digit % 2
-        guess_odd_or_even = guess_digit % 2
-        odd_or_even_match = secret_odd_or_even == guess_odd_or_even
-
-        eliminator_fn = self.make_eliminator_fn(guess_odd_or_even, odd_or_even_match)
-        eliminate(solver.available, eliminator_fn)
-
-    def make_eliminator_fn(
-        self,
-        guess_odd_or_even: int,
-        odd_or_even_match: bool,
-    ) -> Callable[[int], bool]:
-        return (
-            lambda n: (digit_value(n, self.digit) % 2 == guess_odd_or_even)
-            ^ odd_or_even_match
-        )
+    def computation(self, value):
+        return digit_value(value, self.digit) % 2
 
 
 # Cards 11 to 13
@@ -92,32 +71,8 @@ class DigitOrdering(Rule):
         self.digit_lhs = digit_lhs
         self.digit_rhs = digit_rhs
 
-    def analyze(self, solver, guess):
-        secret_ord = comp(
-            digit_value(solver.secret, self.digit_lhs),
-            digit_value(solver.secret, self.digit_rhs),
-        )
-        guess_ord = comp(
-            digit_value(guess, self.digit_lhs),
-            digit_value(guess, self.digit_rhs),
-        )
-        ord_match = secret_ord == guess_ord
-
-        eliminator_fn = self.make_eliminator_fn(guess_ord, ord_match)
-        eliminate(solver.available, eliminator_fn)
-
-    def make_eliminator_fn(
-        self,
-        guess_ord: int,
-        ord_match: bool,
-    ) -> Callable[[int], bool]:
-        return (
-            lambda n: (
-                comp(
-                    digit_value(n, self.digit_lhs),
-                    digit_value(n, self.digit_rhs),
-                )
-                == guess_ord
-            )
-            ^ ord_match
+    def computation(self, value):
+        return comp(
+            digit_value(value, self.digit_lhs),
+            digit_value(value, self.digit_rhs),
         )

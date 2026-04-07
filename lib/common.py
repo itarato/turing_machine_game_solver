@@ -46,3 +46,11 @@ def eliminate(available: list[int], fn: Callable[[int], bool]):
     for i in range(len(available) - 1, -1, -1):
         if fn(available[i]):
             available.pop(i)
+
+
+def digit_list(n: int) -> list[int]:
+    return [
+        digit_value(n, DIGIT_BLUE),
+        digit_value(n, DIGIT_YELLOW),
+        digit_value(n, DIGIT_PURPLE),
+    ]

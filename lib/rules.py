@@ -45,6 +45,17 @@ class MidpointOrdering(Rule):
         return comp(digit_value(value, self.digit), self.midpoint)
 
 
+# Card 1
+# To pass the test of this Verifier, you must find if the
+# number is equal to or greater than 1.
+# Watch out! If the number in your proposal is 3 and you
+# get a this does NOT mean that the number is 3, it
+# only means that it must be greater than 1 (and not equal to it).
+class LeftPointOrdering(MidpointOrdering):
+    def __init__(self, digit: int):
+        super().__init__(digit, 1)
+
+
 # Cards 5 to 7
 # To pass this test, find if the number has to be even
 # (2 or 4) or odd (1, 3, or 5).
@@ -55,6 +66,20 @@ class EvenOdd(Rule):
 
     def computation(self, value):
         return digit_value(value, self.digit) % 2
+
+
+# Cards 8 to 10
+# The Verifier verifies that there is a precise number (that they
+# know) of 1s in your proposal. For example, they can verify
+# that there are two (no more, no less). In this case, the code
+# can be 113, 151, 411, etc.
+class NumberOrDigits(Rule):
+    def __init__(self, n: int):
+        super().__init__()
+        self.n = n
+
+    def computation(self, value):
+        return digit_list(value).count(self.n)
 
 
 # Cards 11 to 13

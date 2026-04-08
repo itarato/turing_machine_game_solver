@@ -1,5 +1,3 @@
-from typing import Callable
-
 from lib.common import *
 from lib.solver import *
 
@@ -101,3 +99,69 @@ class DigitOrdering(Rule):
             digit_value(value, self.digit_lhs),
             digit_value(value, self.digit_rhs),
         )
+
+
+# Cards 14 to 15
+# The Verifier verifies that the number of a particular colour
+# (that they know) is smaller than all the other numbers.
+class TwoDigitOrdering(Rule):
+    def __init__(self, smallest_digit: int):
+        super().__init__()
+        self.smallest_digit = smallest_digit
+
+    def computation(self, value):
+        digival = digit_value(value, self.smallest_digit)
+        other_digival1 = digit_value(value, (self.smallest_digit + 1) % 3)
+        other_digival2 = digit_value(value, (self.smallest_digit + 2) % 3)
+        return digival < other_digival1 and digival < other_digival2
+
+
+# Card 16
+# The Verifier verifies that there are more of either even
+# (e.g.: 454) or odd (e.g.: 341) numbers in the code.
+class MoreEvenOrOdd(Rule):
+    def computation(self, value):
+        digivals = digit_list(value)
+        evens = list(map(lambda x: x % 2, digivals)).count(0)
+        odds = list(map(lambda x: x % 2, digivals)).count(0)
+        return evens < odds
+
+
+# Card 17
+# The Verifier verifies that there is a precise number
+# (that they know) of even numbers in the code:
+# zero, one, two, or three.
+class EvenCount(Rule):
+    def computation(self, value):
+        digivals = digit_list(value)
+        return list(map(lambda x: x % 2, digivals)).count(0)
+
+
+# Card 18
+# The Verifier verifies that the sum of all the numbers in the code
+# is either even or odd.
+class SumParity(Rule):
+    def computation(self, value):
+        return sum(digit_list(value)) % 2
+
+
+# Card 19
+# These cards work like cards 2 to 4, but the Verifier compares
+# the sum of the and numbers to 6. This sum can be less than,
+# equal to, or greater than 6.
+class BlueYellowSumToSix(Rule):
+    def computation(self, value):
+        blue = digit_value(value, DIGIT_BLUE)
+        yellow = digit_value(value, DIGIT_YELLOW)
+        return comp(blue + yellow, 6)
+
+
+# Card 20
+# The Verifier verifies if a number repeats itself, and if it so, how many
+# times. There may be no repetition (e.g.: 125), one number repeats
+# itself once (e.g.: 121), or a number repeats itself twice (e.g.: 222).
+# If a number repeats itself, the Verifier does not know anything about it.
+# They don’t know the colour (if it’s ) or its number (a 2 or a 3, etc,).
+class Repetition(Rule):
+    def computation(self, value):
+        return super().computation(value)

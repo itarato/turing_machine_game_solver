@@ -164,4 +164,17 @@ class BlueYellowSumToSix(Rule):
 # They don’t know the colour (if it’s ) or its number (a 2 or a 3, etc,).
 class Repetition(Rule):
     def computation(self, value):
-        return super().computation(value)
+        digits = digit_list(value)
+        return max(list(map(lambda v: digits.count(v), digits)))
+
+
+# Card 21
+# The Verifier verifies that there is either one pair of identical numbers
+# (e.g.: 313), or no pairs of identical numbers (e.g.: 231, or 333 - which is
+# not exactly a pair). If there is a pair, the Verifier does not know anything
+# about it. They don’t know the colour (if it’s ) or its number (a 2 or a
+# 3, etc,).
+class HasPair(Rule):
+    def computation(self, value):
+        digits = digit_list(value)
+        return max(list(map(lambda v: digits.count(v), digits))) == 2

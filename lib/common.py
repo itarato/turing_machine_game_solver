@@ -1,5 +1,7 @@
 from typing import Callable
 
+import random
+
 DIGIT_BLUE = 2
 DIGIT_YELLOW = 1
 DIGIT_PURPLE = 0
@@ -7,6 +9,17 @@ DIGIT_PURPLE = 0
 ORD_LT = -1
 ORD_EQ = 0
 ORD_GT = 1
+
+
+COLOR_PURPLE = 95
+COLOR_YELLOW = 93
+COLOR_BLUE = 96
+COLOR_RED = 91
+COLOR_GREEN = 92
+
+
+def color_str(s: str, color: int) -> str:
+    return f"\x1b[{color}m{s}\x1b[0m"
 
 
 def generate_available_numbers(digit: int = DIGIT_BLUE) -> list[int]:
@@ -25,6 +38,21 @@ def generate_available_numbers(digit: int = DIGIT_BLUE) -> list[int]:
             ],
             [],
         )
+
+
+def digit_name(d: int) -> str:
+    if d == DIGIT_PURPLE:
+        return "PURPLE"
+    elif d == DIGIT_YELLOW:
+        return "YELLOW"
+    elif d == DIGIT_BLUE:
+        return "BLUE"
+    else:
+        raise RuntimeError
+
+
+def random_game_number() -> int:
+    return random.randint(1, 5) * 100 + random.randint(1, 5) * 10 + random.randint(1, 5)
 
 
 def digit_value(number, digit) -> int:
@@ -50,7 +78,7 @@ def eliminate(available: list[int], fn: Callable[[int], bool]):
 
 def digit_list(n: int) -> list[int]:
     return [
-        digit_value(n, DIGIT_BLUE),
-        digit_value(n, DIGIT_YELLOW),
         digit_value(n, DIGIT_PURPLE),
+        digit_value(n, DIGIT_YELLOW),
+        digit_value(n, DIGIT_BLUE),
     ]

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from lib.common import *
 from lib.solver import *
 
@@ -12,10 +14,13 @@ class Rule:
     def computation(self, value: int) -> int:
         raise NotImplementedError
 
+    def title(self) -> str:
+        raise NotImplementedError
+
     #
     # The main entrypoint to analyse a guess.
     #
-    def analyze(self, solver: Solver, guess: int):
+    def analyze(self, solver: Solver, guess: int) -> bool:
         secret_result = self.computation(solver.secret)
         guess_result = self.computation(guess)
         result_match = secret_result == guess_result
@@ -23,6 +28,7 @@ class Rule:
             solver.available,
             lambda n: (self.computation(n) == guess_result) ^ result_match,
         )
+        return result_match
 
 
 # Cards 2 to 4
@@ -42,6 +48,9 @@ class MidpointOrdering(Rule):
     def computation(self, value) -> int:
         return comp(digit_value(value, self.digit), self.midpoint)
 
+    def title(self) -> str:
+        return f"Ordering: {digit_name(self.digit)} < = > {self.midpoint}"
+
 
 # Card 1
 # To pass the test of this Verifier, you must find if the
@@ -52,6 +61,9 @@ class MidpointOrdering(Rule):
 class LeftPointOrdering(MidpointOrdering):
     def __init__(self, digit: int):
         super().__init__(digit, 1)
+
+    def title(self) -> str:
+        return f"Pertial ordering: {digit_name(self.digit)} < = > 1"
 
 
 # Cards 5 to 7
@@ -64,6 +76,9 @@ class EvenOdd(Rule):
 
     def computation(self, value):
         return digit_value(value, self.digit) % 2
+
+    def title(self) -> str:
+        return f"{digit_name(self.digit)} is even or odd"
 
 
 # Cards 8 to 10
@@ -78,6 +93,9 @@ class NumberOrDigits(Rule):
 
     def computation(self, value):
         return digit_list(value).count(self.n)
+
+    def title(self) -> str:
+        return f"Number of digits: ___ | _{self.n}_ | {self.n}{self.n}_ | {self.n}{self.n}{self.n}"
 
 
 # Cards 11 to 13
@@ -100,20 +118,46 @@ class DigitOrdering(Rule):
             digit_value(value, self.digit_rhs),
         )
 
+    def title(self) -> str:
+        return f"Digit ordering: {digit_name(self.digit_lhs)} < = > {digit_name(self.digit_rhs)}"
+
 
 # Cards 14 to 15
 # The Verifier verifies that the number of a particular colour
 # (that they know) is smaller than all the other numbers.
-class TwoDigitOrdering(Rule):
-    def __init__(self, smallest_digit: int):
-        super().__init__()
-        self.smallest_digit = smallest_digit
-
+class SmallestDigit(Rule):
     def computation(self, value):
-        digival = digit_value(value, self.smallest_digit)
-        other_digival1 = digit_value(value, (self.smallest_digit + 1) % 3)
-        other_digival2 = digit_value(value, (self.smallest_digit + 2) % 3)
-        return digival < other_digival1 and digival < other_digival2
+        digilist = digit_list(value)
+        if digilist[0] < digilist[1] and digilist[0] < digilist[2]:
+            return 0
+        elif digilist[1] < digilist[0] and digilist[1] < digilist[2]:
+            return 1
+        elif digilist[2] < digilist[1] and digilist[2] < digilist[0]:
+            return 2
+        else:
+            return -1
+
+    def title(self):
+        return f"Smallest digit: _ < _ and _"
+
+
+# Cards 14 to 15
+# The Verifier verifies that the number of a particular colour
+# (that they know) is smaller than all the other numbers.
+class GreatestDigit(Rule):
+    def computation(self, value):
+        digilist = digit_list(value)
+        if digilist[0] > digilist[1] and digilist[0] > digilist[2]:
+            return 0
+        elif digilist[1] > digilist[0] and digilist[1] > digilist[2]:
+            return 1
+        elif digilist[2] > digilist[1] and digilist[2] > digilist[0]:
+            return 2
+        else:
+            return -1
+
+    def title(self):
+        return f"Greatest digit: _ > _ and _"
 
 
 # Card 16
@@ -126,6 +170,9 @@ class MoreEvenOrOdd(Rule):
         odds = list(map(lambda x: x % 2, digivals)).count(0)
         return evens < odds
 
+    def title(self):
+        return f"More even or odd?"
+
 
 # Card 17
 # The Verifier verifies that there is a precise number
@@ -136,6 +183,9 @@ class EvenCount(Rule):
         digivals = digit_list(value)
         return list(map(lambda x: x % 2, digivals)).count(0)
 
+    def title(self):
+        return f"Even count"
+
 
 # Card 18
 # The Verifier verifies that the sum of all the numbers in the code
@@ -143,6 +193,9 @@ class EvenCount(Rule):
 class SumParity(Rule):
     def computation(self, value):
         return sum(digit_list(value)) % 2
+
+    def title(self):
+        return "Parity of sum of digits: mod(_ + _ + _)"
 
 
 # Card 19
@@ -155,6 +208,9 @@ class BlueYellowSumToSix(Rule):
         yellow = digit_value(value, DIGIT_YELLOW)
         return comp(blue + yellow, 6)
 
+    def title(self):
+        return "Order of blue + yellow compare to 6: B + Y < = > 6"
+
 
 # Card 20
 # The Verifier verifies if a number repeats itself, and if it so, how many
@@ -162,10 +218,13 @@ class BlueYellowSumToSix(Rule):
 # itself once (e.g.: 121), or a number repeats itself twice (e.g.: 222).
 # If a number repeats itself, the Verifier does not know anything about it.
 # They don’t know the colour (if it’s ) or its number (a 2 or a 3, etc,).
-class Repetition(Rule):
+class MaxRepetition(Rule):
     def computation(self, value):
         digits = digit_list(value)
         return max(list(map(lambda v: digits.count(v), digits)))
+
+    def title(self):
+        return "Max repetition"
 
 
 # Card 21
@@ -178,3 +237,6 @@ class HasPair(Rule):
     def computation(self, value):
         digits = digit_list(value)
         return max(list(map(lambda v: digits.count(v), digits))) == 2
+
+    def title(self):
+        return "Has a par?: _XX?"

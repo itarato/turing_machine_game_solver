@@ -77,6 +77,7 @@ class Cli:
                     exit()
                 else:
                     print(color_str(f"NO! IT'S NOT {guess}", COLOR_RED))
+                continue
             elif command == CMD_CHEAT:
                 self.dump_solver_state(solver)
                 continue
@@ -105,7 +106,23 @@ class Cli:
         return RULES[allowed_rules[selected]]
 
     def pick_number(self) -> int:
-        return int(input("Pick a number: "))
+        allowed = list(range(1, 6))
+        while True:
+            n = int(input("Pick a number: "))
+            if n < 111 or n > 555:
+                print("Invalid number. Must be 111-555 only 1-5s")
+                continue
+
+            digits = digit_list(n)
+            if (
+                digits[0] not in allowed
+                or digits[1] not in allowed
+                or digits[2] not in allowed
+            ):
+                print("Invalid number. Must be 111-555 only 1-5s")
+                continue
+
+            return n
 
     def dump_solver_state(self, solver: Solver):
         print(f"Secret: {solver.secret}")

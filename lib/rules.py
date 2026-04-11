@@ -167,7 +167,7 @@ class MoreEvenOrOdd(Rule):
     def computation(self, value):
         digivals = digit_list(value)
         evens = list(map(lambda x: x % 2, digivals)).count(0)
-        odds = list(map(lambda x: x % 2, digivals)).count(0)
+        odds = list(map(lambda x: x % 2, digivals)).count(1)
         return evens < odds
 
     def title(self):

@@ -28,7 +28,6 @@ if __name__ == "__main__":
         mode, difficulty, verifiers = read_custom_setting()
         problem = downloader.load_problem_by_setting(mode, difficulty, verifiers)
     else:
-        id = int(arg1)
-        problem = downloader.load_problem_by_id(id)
+        problem = downloader.load_problem_by_id(arg1)
 
     Cli(problem).run()

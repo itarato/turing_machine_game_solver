@@ -94,7 +94,6 @@ class Cli:
                     print(color_str("It's not a match", COLOR_RED))
 
                 self.evaluated_rules.append(EvaluatedRule(rule, guess, res))
-                self.rerun_all_rules()
             elif command == CMD_ANSWER:
                 answer = self.pick_number("Your guess is: ")
                 if answer == self.solver.secret:
@@ -178,16 +177,3 @@ class Cli:
                     + " for "
                     + color_str(str(evaluated_rule.guess), COLOR_WHITE)
                 )
-
-    def rerun_all_rules(self):
-        while True:
-            had_change = False
-
-            for evaluated_rule in self.evaluated_rules:
-                available_count = len(self.solver.available)
-                evaluated_rule.rule.analyze(self.solver, evaluated_rule.guess)
-                if available_count > len(self.solver.available):
-                    had_change = True
-
-            if not had_change:
-                break

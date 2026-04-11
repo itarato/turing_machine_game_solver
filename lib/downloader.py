@@ -35,7 +35,7 @@ class Downloader:
             problem = self.load_problem_by_id(i)
             print(problem.source)
 
-    def load_problem_by_id(self, id: int) -> Problem:
+    def load_problem_by_id(self, id: str) -> Problem:
         if id in self.cache:
             parsed = self.cache[id]
         else:
@@ -58,9 +58,9 @@ class Downloader:
             print(f"Error at parsing downloaded problem #{id}: {parsed} Error: {e}")
             exit()
 
-    def load_source_by_id(self, id: int) -> dict:
+    def load_source_by_id(self, id: str) -> dict:
         url = "https://turingmachine.info/api/api.php"
-        params = {"uuid": UUID, "h": str(id)}
+        params = {"uuid": UUID, "h": id}
         response = requests.get(url, params=params, headers=HEADERS)
 
         assert response.status_code == 200

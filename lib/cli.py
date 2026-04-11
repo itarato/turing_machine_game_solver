@@ -37,21 +37,24 @@ RULES = {
 
 class Cli:
     def __init__(self):
-        pass
+        self.downloader = Downloader()
 
     def run(self, id: int):
         clear_screen()
 
-        problem = load_problem(id)
+        problem = self.downloader.load_problem(id)
         solver = Solver(problem.secret)
-        guess = self.pick_number()
+        guess = None
         attempt = 0
         evaluated_rules = []
 
         while True:
-            commands = [CMD_RULE, CMD_NUM, CMD_ANSWER, CMD_CHEAT, CMD_EXIT]
-            menu = TerminalMenu(commands)
-            command = commands[menu.show()]
+            if guess is None:
+                command = CMD_NUM
+            else:
+                commands = [CMD_RULE, CMD_NUM, CMD_ANSWER, CMD_CHEAT, CMD_EXIT]
+                menu = TerminalMenu(commands)
+                command = commands[menu.show()]
 
             if command == CMD_NUM:
                 guess = self.pick_number()

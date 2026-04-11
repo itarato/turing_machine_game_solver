@@ -33,7 +33,11 @@ class Downloader:
             parsed = self.load_source(id)
             time.sleep(1)
 
-        return Problem(id, parsed["ind"], parsed["code"])
+        try:
+            return Problem(id, parsed["ind"], parsed["code"])
+        except Exception as e:
+            print(f"Error at parsing downloaded problem #{id}: {parsed} Error: {e}")
+            exit()
 
     def load_source(self, id: int) -> dict:
         url = "https://turingmachine.info/api/api.php"

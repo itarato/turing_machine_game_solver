@@ -117,3 +117,34 @@ def draw_elimination_table(available: list[int]):
         + color_str("╚═══╝", COLOR_YELLOW)
         + color_str("╚═══╝", COLOR_PURPLE)
     )
+
+
+def print_number(n: int):
+    digilist = digit_list(n)
+    print(
+        color_str("╔═══╗", COLOR_BLUE)
+        + color_str("╔═══╗", COLOR_YELLOW)
+        + color_str("╔═══╗", COLOR_PURPLE)
+    )
+    print(
+        color_str(f"║ {digilist[DIGIT_BLUE]} ║", COLOR_BLUE)
+        + color_str(f"║ {digilist[DIGIT_YELLOW]} ║", COLOR_YELLOW)
+        + color_str(f"║ {digilist[DIGIT_PURPLE]} ║", COLOR_PURPLE)
+    )
+    print(
+        color_str("╚═══╝", COLOR_BLUE)
+        + color_str("╚═══╝", COLOR_YELLOW)
+        + color_str("╚═══╝", COLOR_PURPLE)
+    )
+
+
+def print_evaluated_rules(evaluated_rules: list[list[any]]):
+    for title, guess, match in evaluated_rules:
+        if match:
+            print(color_str(f"🗸 {title} for {guess}", COLOR_GREEN))
+        else:
+            print(color_str(f"✘ {title} for {guess}", COLOR_RED))
+
+
+def clear_screen():
+    print("\033[2J\033[H", end="")

@@ -2,8 +2,13 @@ from lib.common import *
 from lib.solver import *
 from lib.rules import *
 from lib.downloader import *
-import sys
+from simple_term_menu import TerminalMenu
 
+CMD_NUM = "Pick a new number"
+CMD_RULE = "Evaluate a rule card"
+CMD_CHEAT = "Cheat"
+CMD_ANSWER = "Answer"
+CMD_EXIT = "Exit"
 
 RULES = {
     1: LeftPointOrdering(DIGIT_BLUE),
@@ -35,71 +40,71 @@ class Cli:
         pass
 
     def run(self, id: int):
+        clear_screen()
+
         problem = load_problem(id)
         solver = Solver(problem.secret)
         guess = self.pick_number()
         attempt = 0
+        evaluated_rules = []
 
         while True:
-            command = input("Command (num, rule, answer, cheat): ")
+            commands = [CMD_NUM, CMD_RULE, CMD_ANSWER, CMD_CHEAT, CMD_EXIT]
+            menu = TerminalMenu(commands)
+            command = commands[menu.show()]
 
-            if command == "num":
+            if command == CMD_NUM:
                 guess = self.pick_number()
                 attempt = 0
-            elif command == "rule":
+            elif command == CMD_RULE:
+                if attempt >= 3:
+                    print("Need to pick a new number")
+                    continue
+
                 attempt += 1
                 rule = self.pick_rule(problem.rules)
-
                 res = rule.analyze(solver, guess)
+
                 if res:
                     print(color_str("It's a match", COLOR_GREEN))
                 else:
                     print(color_str("It's not a match", COLOR_RED))
 
-                draw_elimination_table(solver.available)
-            elif command == "answer":
+                evaluated_rules.append([rule.title(), guess, res])
+            elif command == CMD_ANSWER:
                 if guess == solver.secret:
                     print(color_str(f"YES YOU WON! IT WAS {guess}", COLOR_GREEN))
                     exit()
                 else:
                     print(color_str(f"NO! IT'S NOT {guess}", COLOR_RED))
-            elif command == "cheat":
+            elif command == CMD_CHEAT:
                 self.dump_solver_state(solver)
+            elif command == CMD_EXIT:
+                exit()
             else:
-                print(f"Unknown command `{command}`")
+                raise RuntimeError
+
+            clear_screen()
+            print_number(guess)
+            draw_elimination_table(solver.available)
+            print_evaluated_rules(evaluated_rules)
 
     def pick_rule(self, allowed_rules: list[int]) -> Rule:
+        options = []
         for i in allowed_rules:
             if i not in RULES:
                 print(f"Rule {i} is not yet added")
                 exit()
 
-            print(color_str(f"Rule #{i}:", COLOR_BOLD) + " {RULES[i].title()}")
+            options.append(RULES[i].title())
 
-        i = int(input("Rule #: "))
-        return RULES[i]
+        menu = TerminalMenu(options)
+        selected = menu.show()
+
+        return RULES[allowed_rules[selected]]
 
     def pick_number(self) -> int:
-        guess = int(input("Pick a number: "))
-
-        digilist = digit_list(guess)
-        print(
-            color_str("╔═══╗", COLOR_BLUE)
-            + color_str("╔═══╗", COLOR_YELLOW)
-            + color_str("╔═══╗", COLOR_PURPLE)
-        )
-        print(
-            color_str(f"║ {digilist[DIGIT_BLUE]} ║", COLOR_BLUE)
-            + color_str(f"║ {digilist[DIGIT_YELLOW]} ║", COLOR_YELLOW)
-            + color_str(f"║ {digilist[DIGIT_PURPLE]} ║", COLOR_PURPLE)
-        )
-        print(
-            color_str("╚═══╝", COLOR_BLUE)
-            + color_str("╚═══╝", COLOR_YELLOW)
-            + color_str("╚═══╝", COLOR_PURPLE)
-        )
-
-        return guess
+        return int(input("Pick a number: "))
 
     def dump_solver_state(self, solver: Solver):
         print(f"Secret: {solver.secret}")

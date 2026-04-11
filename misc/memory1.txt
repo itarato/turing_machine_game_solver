@@ -1,0 +1,27 @@
+═══════════════
+Turing Machine
+#: E52 F5T S
+Mode: Extreme
+Difficulty: Standard
+Verifiers: 5
+═══════════════
+╔═══╗╔═══╗╔═══╗
+║ 5 ║║ 1 ║║ 3 ║
+╚═══╝╚═══╝╚═══╝
+╔═══╗╔═══╗╔═══╗
+║ - ║║ - ║║ - ║
+║ 2 ║║ 2 ║║ - ║
+║ 3 ║║ 3 ║║ - ║
+║ - ║║ - ║║ 4 ║
+║ 5 ║║ - ║║ - ║
+╚═══╝╚═══╝╚═══╝
+✘ Number of digits: ___ / _1_ / 11_ / 111 for 123
+🗸 Has a par?: _XX? for 123
+🗸 More even or odd? for 123
+✘ PURPLE is even or odd for 513
+🗸 Digit ordering: YELLOW < = > PURPLE for 513
+Secret: 534
+Eliminations left: 4
+[234, 324, 524, 534]
+Your guess is: 534
+YES YOU WON! IT WAS 534

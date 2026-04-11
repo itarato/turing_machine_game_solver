@@ -11,5 +11,5 @@ Game: https://www.turingmachine.info/
 > python lib/download.py <FROM:int> <TO:int>
 
 # Run game:
-> python main.py <ID:int>
+> python main.py
 ```

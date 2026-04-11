@@ -58,6 +58,16 @@ class Downloader:
             print(f"Error at parsing downloaded problem #{id}: {parsed} Error: {e}")
             exit()
 
+    def load_todays_problem(self) -> Problem:
+        ts = int(time.time())
+        parsed = self.load_source_for_timestamp(ts)
+
+        try:
+            return Problem(id, parsed["ind"], parsed["code"], parsed)
+        except Exception as e:
+            print(f"Error at parsing downloaded problem #{id}: {parsed} Error: {e}")
+            exit()
+
     def load_source_by_id(self, id: str) -> dict:
         url = "https://turingmachine.info/api/api.php"
         params = {"uuid": UUID, "h": id}
@@ -67,6 +77,19 @@ class Downloader:
         parsed = json.loads(response.text)
 
         self.cache[id] = parsed
+        pickle.dump(self.cache, open(CACHE_FILE_PATH, "wb"))
+
+        return parsed
+
+    def load_source_for_timestamp(self, ts: int) -> dict:
+        url = "https://turingmachine.info/api/api.php"
+        params = {"uuid": UUID, "s": "1", "curDate": str(ts)}
+        response = requests.get(url, params=params, headers=HEADERS)
+
+        assert response.status_code == 200
+        parsed = json.loads(response.text)
+
+        self.cache[parsed["hash"]] = parsed
         pickle.dump(self.cache, open(CACHE_FILE_PATH, "wb"))
 
         return parsed

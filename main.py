@@ -18,16 +18,21 @@ def read_custom_setting() -> tuple[int, int, int]:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Call: python3 main.py <PROBLEM-INDEX:int>")
-
     downloader = Downloader()
 
-    arg1 = sys.argv[1]
-    if arg1 == "custom":
+    print("Load challenge:")
+    options = ["Custom", "Daily", "By ID"]
+    i = TerminalMenu(options).show()
+    if i is None:
+        exit()
+
+    if i == 0:
         mode, difficulty, verifiers = read_custom_setting()
         problem = downloader.load_problem_by_setting(mode, difficulty, verifiers)
-    else:
-        problem = downloader.load_problem_by_id(arg1)
+    elif i == 1:
+        problem = downloader.load_todays_problem()
+    elif i == 2:
+        id = input("ID: ")
+        problem = downloader.load_problem_by_id(id)
 
     Cli(problem).run()

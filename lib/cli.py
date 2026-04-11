@@ -36,18 +36,25 @@ RULES = {
 }
 
 
+class EvaluatedRule:
+    def __init__(self, rule: Rule, guess: int, match: bool):
+        self.rule = rule
+        self.guess = guess
+        self.match = match
+
+
 class Cli:
     def __init__(self, problem: Problem):
         self.problem = problem
         self.solver = Solver(self.problem.secret)
-        self.evaluated_rules = []
+        self.evaluated_rules: list[EvaluatedRule] = []
 
     def run(self):
         clear_screen()
 
-        guess = None
-        attempt = 0
-        eliminator_on = True
+        guess: None | int = None
+        attempt: int = 0
+        eliminator_on: bool = True
 
         while True:
             if guess is None:
@@ -78,6 +85,7 @@ class Cli:
                 rule = self.pick_rule(self.problem.rules)
                 if rule is None:
                     continue
+
                 res = rule.analyze(self.solver, guess)
 
                 if res:
@@ -85,7 +93,8 @@ class Cli:
                 else:
                     print(color_str("It's not a match", COLOR_RED))
 
-                self.evaluated_rules.append([rule.title(), guess, res])
+                self.evaluated_rules.append(EvaluatedRule(rule, guess, res))
+                self.rerun_all_rules()
             elif command == CMD_ANSWER:
                 answer = self.pick_number("Your guess is: ")
                 if answer == self.solver.secret:
@@ -156,16 +165,29 @@ class Cli:
         print(solver.available)
 
     def print_evaluated_rules(self):
-        for title, guess, match in self.evaluated_rules:
-            if match:
+        for evaluated_rule in self.evaluated_rules:
+            if evaluated_rule.match:
                 print(
-                    color_str(f"🗸 {title}", COLOR_GREEN)
+                    color_str(f"🗸 {evaluated_rule.rule.title()}", COLOR_GREEN)
                     + " for "
-                    + color_str(str(guess), COLOR_WHITE)
+                    + color_str(str(evaluated_rule.guess), COLOR_WHITE)
                 )
             else:
                 print(
-                    color_str(f"✘ {title}", COLOR_RED)
+                    color_str(f"✘ {evaluated_rule.rule.title()}", COLOR_RED)
                     + " for "
-                    + color_str(str(guess), COLOR_WHITE)
+                    + color_str(str(evaluated_rule.guess), COLOR_WHITE)
                 )
+
+    def rerun_all_rules(self):
+        while True:
+            had_change = False
+
+            for evaluated_rule in self.evaluated_rules:
+                available_count = len(self.solver.available)
+                evaluated_rule.rule.analyze(self.solver, evaluated_rule.guess)
+                if available_count > len(self.solver.available):
+                    had_change = True
+
+            if not had_change:
+                break

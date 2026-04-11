@@ -3,15 +3,24 @@ import time
 import json
 import pickle
 import sys
+from lib.common import *
+from lib.problem import *
 
 CACHE_FILE_PATH = "./cache/problems.pkl"
-
-
-class Problem:
-    def __init__(self, id: int, rules: list[int], secret: int):
-        self.id = id
-        self.rules = rules
-        self.secret = secret
+UUID = "6d4918c2-ab2b-408d-a186-6308deb6f144"
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:149.0) Gecko/20100101 Firefox/149.0",
+    "Accept": "*/*",
+    "Accept-Language": "en-CA,en-US;q=0.9,en;q=0.8",
+    "Accept-Encoding": "gzip, deflate, br, zstd",
+    "Referer": "https://www.turingmachine.info/",
+    "Origin": "https://www.turingmachine.info",
+    "Connection": "keep-alive",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-site",
+    "Priority": "u=4",
+}
 
 
 class Downloader:
@@ -23,45 +32,64 @@ class Downloader:
 
     def load_problems(self, rng: range):
         for i in rng:
-            problem = self.load_problem(i)
-            print(problem)
+            problem = self.load_problem_by_id(i)
+            print(problem.source)
 
-    def load_problem(self, id: int) -> Problem:
+    def load_problem_by_id(self, id: int) -> Problem:
         if id in self.cache:
             parsed = self.cache[id]
         else:
-            parsed = self.load_source(id)
+            parsed = self.load_source_by_id(id)
             time.sleep(1)
 
         try:
-            return Problem(id, parsed["ind"], parsed["code"])
+            return Problem(id, parsed["ind"], parsed["code"], parsed)
         except Exception as e:
             print(f"Error at parsing downloaded problem #{id}: {parsed} Error: {e}")
             exit()
 
-    def load_source(self, id: int) -> dict:
-        url = "https://turingmachine.info/api/api.php"
-        params = {"uuid": "6d4918c2-ab2b-408d-a186-6308deb6f144", "h": str(id)}
-        headers = {
-            "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:149.0) Gecko/20100101 Firefox/149.0",
-            "Accept": "*/*",
-            "Accept-Language": "en-CA,en-US;q=0.9,en;q=0.8",
-            "Accept-Encoding": "gzip, deflate, br, zstd",
-            "Referer": "https://www.turingmachine.info/",
-            "Origin": "https://www.turingmachine.info",
-            "Connection": "keep-alive",
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-site",
-            "Priority": "u=4",
-        }
+    def load_problem_by_setting(
+        self, mode: int, difficulty: int, verifiers: int
+    ) -> Problem:
+        parsed = self.load_source_by_setting(mode, difficulty, verifiers)
+        try:
+            return Problem(id, parsed["ind"], parsed["code"], parsed)
+        except Exception as e:
+            print(f"Error at parsing downloaded problem #{id}: {parsed} Error: {e}")
+            exit()
 
-        response = requests.get(url, params=params, headers=headers)
+    def load_source_by_id(self, id: int) -> dict:
+        url = "https://turingmachine.info/api/api.php"
+        params = {"uuid": UUID, "h": str(id)}
+        response = requests.get(url, params=params, headers=HEADERS)
 
         assert response.status_code == 200
         parsed = json.loads(response.text)
 
         self.cache[id] = parsed
+        pickle.dump(self.cache, open(CACHE_FILE_PATH, "wb"))
+
+        return parsed
+
+    # Mode: 0-2
+    # Difficulty: 0-2
+    # Verifiers: 4-6
+    def load_source_by_setting(
+        self, mode: int, difficulty: int, verifiers: int
+    ) -> dict:
+        url = "https://turingmachine.info/api/api.php"
+        params = {
+            "uuid": UUID,
+            "m": str(mode),
+            "d": str(difficulty),
+            "n": str(verifiers),
+        }
+        response = requests.get(url, params=params, headers=HEADERS)
+
+        assert response.status_code == 200
+        parsed = json.loads(response.text)
+
+        self.cache[parsed["hash"]] = parsed
         pickle.dump(self.cache, open(CACHE_FILE_PATH, "wb"))
 
         return parsed

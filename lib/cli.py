@@ -9,6 +9,7 @@ CMD_RULE = "Evaluate a rule card"
 CMD_CHEAT = "Cheat"
 CMD_ANSWER = "Answer"
 CMD_EXIT = "Exit"
+CMD_TOGGLE_ELIMINATOR = "Toggle elimination chart"
 
 RULES = {
     1: LeftPointOrdering(DIGIT_BLUE),
@@ -36,23 +37,29 @@ RULES = {
 
 
 class Cli:
-    def __init__(self):
-        self.downloader = Downloader()
+    def __init__(self, problem: Problem):
+        self.problem = problem
+        self.solver = Solver(self.problem.secret)
 
-    def run(self, id: int):
+    def run(self):
         clear_screen()
 
-        problem = self.downloader.load_problem(id)
-        solver = Solver(problem.secret)
         guess = None
         attempt = 0
         evaluated_rules = []
+        eliminator_on = False
 
         while True:
             if guess is None:
                 command = CMD_NUM
             else:
-                commands = [CMD_NUM, CMD_ANSWER, CMD_CHEAT, CMD_EXIT]
+                commands = [
+                    CMD_NUM,
+                    CMD_ANSWER,
+                    CMD_TOGGLE_ELIMINATOR,
+                    CMD_CHEAT,
+                    CMD_EXIT,
+                ]
                 if attempt < 3:
                     commands.insert(0, CMD_RULE)
 
@@ -68,10 +75,10 @@ class Cli:
                 attempt = 0
             elif command == CMD_RULE:
                 attempt += 1
-                rule = self.pick_rule(problem.rules)
+                rule = self.pick_rule(self.problem.rules)
                 if rule is None:
                     continue
-                res = rule.analyze(solver, guess)
+                res = rule.analyze(self.solver, guess)
 
                 if res:
                     print(color_str("It's a match", COLOR_GREEN))
@@ -81,23 +88,27 @@ class Cli:
                 evaluated_rules.append([rule.title(), guess, res])
             elif command == CMD_ANSWER:
                 answer = self.pick_number("Your guess is: ")
-                if answer == solver.secret:
+                if answer == self.solver.secret:
                     print(color_str(f"YES YOU WON! IT WAS {answer}", COLOR_GREEN))
                     exit()
                 else:
                     print(color_str(f"NO! IT'S NOT {answer}", COLOR_RED))
                 continue
             elif command == CMD_CHEAT:
-                self.dump_solver_state(solver)
+                self.dump_solver_state(self.solver)
                 continue
+            elif command == CMD_TOGGLE_ELIMINATOR:
+                eliminator_on = not eliminator_on
             elif command == CMD_EXIT:
                 exit()
             else:
                 raise RuntimeError
 
             clear_screen()
+            self.problem.print_header()
             print_number(guess)
-            draw_elimination_table(solver.available)
+            if eliminator_on:
+                self.solver.draw_elimination_table()
             print_evaluated_rules(evaluated_rules)
 
     def pick_rule(self, allowed_rules: list[int]) -> None | Rule:

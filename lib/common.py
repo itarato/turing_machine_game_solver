@@ -1,5 +1,5 @@
 from typing import Callable
-
+from lib.problem import *
 import random
 
 DIGIT_BLUE = 2
@@ -86,38 +86,6 @@ def digit_list(n: int) -> list[int]:
         digit_value(n, DIGIT_YELLOW),
         digit_value(n, DIGIT_BLUE),
     ]
-
-
-def draw_elimination_table(available: list[int]):
-    blues = set()
-    yellows = set()
-    purples = set()
-
-    for i in available:
-        digits = digit_list(i)
-
-        blues.add(digits[DIGIT_BLUE])
-        yellows.add(digits[DIGIT_YELLOW])
-        purples.add(digits[DIGIT_PURPLE])
-
-    print(
-        color_str("╔═══╗", COLOR_BLUE)
-        + color_str("╔═══╗", COLOR_YELLOW)
-        + color_str("╔═══╗", COLOR_PURPLE)
-    )
-
-    for i in range(1, 6):
-        print(
-            color_str(f"║ {i if i in blues else '-'} ║", COLOR_BLUE)
-            + color_str(f"║ {i if i in yellows else '-'} ║", COLOR_YELLOW)
-            + color_str(f"║ {i if i in purples else '-'} ║", COLOR_PURPLE)
-        )
-
-    print(
-        color_str("╚═══╝", COLOR_BLUE)
-        + color_str("╚═══╝", COLOR_YELLOW)
-        + color_str("╚═══╝", COLOR_PURPLE)
-    )
 
 
 def print_number(n: int):

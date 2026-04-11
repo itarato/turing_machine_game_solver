@@ -239,4 +239,4 @@ class HasPair(Rule):
         return max(list(map(lambda v: digits.count(v), digits))) == 2
 
     def title(self):
-        return "Has a par?: _XX?"
+        return "Has a pair?: _XX?"

@@ -49,7 +49,7 @@ class Cli:
         evaluated_rules = []
 
         while True:
-            commands = [CMD_NUM, CMD_RULE, CMD_ANSWER, CMD_CHEAT, CMD_EXIT]
+            commands = [CMD_RULE, CMD_NUM, CMD_ANSWER, CMD_CHEAT, CMD_EXIT]
             menu = TerminalMenu(commands)
             command = commands[menu.show()]
 
@@ -79,6 +79,7 @@ class Cli:
                     print(color_str(f"NO! IT'S NOT {guess}", COLOR_RED))
             elif command == CMD_CHEAT:
                 self.dump_solver_state(solver)
+                continue
             elif command == CMD_EXIT:
                 exit()
             else:

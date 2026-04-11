@@ -19,6 +19,7 @@ COLOR_GREEN = 92
 COLOR_GREY = 90
 COLOR_DIM = 2
 COLOR_BOLD = 1
+COLOR_WHITE = 97
 
 
 def color_str(s: str, color: int) -> str:
@@ -141,9 +142,17 @@ def print_number(n: int):
 def print_evaluated_rules(evaluated_rules: list[list[any]]):
     for title, guess, match in evaluated_rules:
         if match:
-            print(color_str(f"🗸 {title} for {guess}", COLOR_GREEN))
+            print(
+                color_str(f"🗸 {title}", COLOR_GREEN)
+                + " for "
+                + color_str(str(guess), COLOR_WHITE)
+            )
         else:
-            print(color_str(f"✘ {title} for {guess}", COLOR_RED))
+            print(
+                color_str(f"✘ {title}", COLOR_RED)
+                + " for "
+                + color_str(str(guess), COLOR_WHITE)
+            )
 
 
 def clear_screen():

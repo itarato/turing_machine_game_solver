@@ -48,16 +48,14 @@ class Cli:
         self.problem = problem
         self.solver = Solver(self.problem.secret)
         self.evaluated_rules: list[EvaluatedRule] = []
+        self.guess: None | int = None
+        self.eliminator_on: bool = True
+        self.attempt: int = 0
 
     def run(self):
-        clear_screen()
-
-        guess: None | int = None
-        attempt: int = 0
-        eliminator_on: bool = True
-
         while True:
-            if guess is None:
+            if self.guess is None:
+                self.refresh_screen()
                 command = CMD_NUM
             else:
                 commands = [
@@ -78,7 +76,7 @@ class Cli:
                     command = commands[cmd_index]
 
             if command == CMD_NUM:
-                guess = self.pick_number()
+                self.guess = self.pick_number()
                 attempt = 0
             elif command == CMD_RULE:
                 attempt += 1
@@ -86,14 +84,14 @@ class Cli:
                 if rule is None:
                     continue
 
-                res = rule.analyze(self.solver, guess)
+                res = rule.analyze(self.solver, self.guess)
 
                 if res:
                     print(color_str("It's a match", COLOR_GREEN))
                 else:
                     print(color_str("It's not a match", COLOR_RED))
 
-                self.evaluated_rules.append(EvaluatedRule(rule, guess, res))
+                self.evaluated_rules.append(EvaluatedRule(rule, self.guess, res))
             elif command == CMD_ANSWER:
                 answer = self.pick_number("Your guess is: ")
                 if answer == self.solver.secret:
@@ -106,18 +104,13 @@ class Cli:
                 self.dump_solver_state(self.solver)
                 continue
             elif command == CMD_TOGGLE_ELIMINATOR:
-                eliminator_on = not eliminator_on
+                self.eliminator_on = not self.eliminator_on
             elif command == CMD_EXIT:
                 exit()
             else:
                 raise RuntimeError
 
-            clear_screen()
-            self.problem.print_header()
-            print_number(guess)
-            if eliminator_on:
-                self.solver.draw_elimination_table()
-            self.print_evaluated_rules()
+            self.refresh_screen()
 
     def pick_rule(self, allowed_rules: list[int]) -> None | Rule:
         options = []
@@ -177,3 +170,33 @@ class Cli:
                     + " for "
                     + color_str(str(evaluated_rule.guess), COLOR_WHITE)
                 )
+
+    def print_number(self):
+        if self.guess is None:
+            digilist = ["?", "?", "?"]
+        else:
+            digilist = digit_list(self.guess)
+
+        print(
+            color_str("╔═══╗", COLOR_BLUE)
+            + color_str("╔═══╗", COLOR_YELLOW)
+            + color_str("╔═══╗", COLOR_PURPLE)
+        )
+        print(
+            color_str(f"║ {digilist[DIGIT_BLUE]} ║", COLOR_BLUE)
+            + color_str(f"║ {digilist[DIGIT_YELLOW]} ║", COLOR_YELLOW)
+            + color_str(f"║ {digilist[DIGIT_PURPLE]} ║", COLOR_PURPLE)
+        )
+        print(
+            color_str("╚═══╝", COLOR_BLUE)
+            + color_str("╚═══╝", COLOR_YELLOW)
+            + color_str("╚═══╝", COLOR_PURPLE)
+        )
+
+    def refresh_screen(self):
+        clear_screen()
+        self.problem.print_header()
+        self.print_number()
+        if self.eliminator_on:
+            self.solver.draw_elimination_table()
+        self.print_evaluated_rules()

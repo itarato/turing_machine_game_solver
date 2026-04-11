@@ -88,24 +88,5 @@ def digit_list(n: int) -> list[int]:
     ]
 
 
-def print_number(n: int):
-    digilist = digit_list(n)
-    print(
-        color_str("╔═══╗", COLOR_BLUE)
-        + color_str("╔═══╗", COLOR_YELLOW)
-        + color_str("╔═══╗", COLOR_PURPLE)
-    )
-    print(
-        color_str(f"║ {digilist[DIGIT_BLUE]} ║", COLOR_BLUE)
-        + color_str(f"║ {digilist[DIGIT_YELLOW]} ║", COLOR_YELLOW)
-        + color_str(f"║ {digilist[DIGIT_PURPLE]} ║", COLOR_PURPLE)
-    )
-    print(
-        color_str("╚═══╝", COLOR_BLUE)
-        + color_str("╚═══╝", COLOR_YELLOW)
-        + color_str("╚═══╝", COLOR_PURPLE)
-    )
-
-
 def clear_screen():
     print("\033[2J\033[H", end="")

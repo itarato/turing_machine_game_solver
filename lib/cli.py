@@ -52,20 +52,25 @@ class Cli:
             if guess is None:
                 command = CMD_NUM
             else:
-                commands = [CMD_RULE, CMD_NUM, CMD_ANSWER, CMD_CHEAT, CMD_EXIT]
+                commands = [CMD_NUM, CMD_ANSWER, CMD_CHEAT, CMD_EXIT]
+                if attempt < 3:
+                    commands.insert(0, CMD_RULE)
+
                 menu = TerminalMenu(commands)
-                command = commands[menu.show()]
+                cmd_index = menu.show()
+                if cmd_index is None:
+                    command = CMD_EXIT
+                else:
+                    command = commands[cmd_index]
 
             if command == CMD_NUM:
                 guess = self.pick_number()
                 attempt = 0
             elif command == CMD_RULE:
-                if attempt >= 3:
-                    print("Need to pick a new number")
-                    continue
-
                 attempt += 1
                 rule = self.pick_rule(problem.rules)
+                if rule is None:
+                    continue
                 res = rule.analyze(solver, guess)
 
                 if res:
@@ -75,11 +80,12 @@ class Cli:
 
                 evaluated_rules.append([rule.title(), guess, res])
             elif command == CMD_ANSWER:
-                if guess == solver.secret:
-                    print(color_str(f"YES YOU WON! IT WAS {guess}", COLOR_GREEN))
+                answer = self.pick_number("Your guess is: ")
+                if answer == solver.secret:
+                    print(color_str(f"YES YOU WON! IT WAS {answer}", COLOR_GREEN))
                     exit()
                 else:
-                    print(color_str(f"NO! IT'S NOT {guess}", COLOR_RED))
+                    print(color_str(f"NO! IT'S NOT {answer}", COLOR_RED))
                 continue
             elif command == CMD_CHEAT:
                 self.dump_solver_state(solver)
@@ -94,7 +100,7 @@ class Cli:
             draw_elimination_table(solver.available)
             print_evaluated_rules(evaluated_rules)
 
-    def pick_rule(self, allowed_rules: list[int]) -> Rule:
+    def pick_rule(self, allowed_rules: list[int]) -> None | Rule:
         options = []
         for i in allowed_rules:
             if i not in RULES:
@@ -105,13 +111,19 @@ class Cli:
 
         menu = TerminalMenu(options)
         selected = menu.show()
+        if selected is None:
+            return None
 
         return RULES[allowed_rules[selected]]
 
-    def pick_number(self) -> int:
+    def pick_number(self, prompt: str = "Pick a number: ") -> int:
         allowed = list(range(1, 6))
         while True:
-            n = int(input("Pick a number: "))
+            try:
+                n = int(input(prompt))
+            except:
+                print("Invalid number. Must be 111-555 only 1-5s")
+                continue
             if n < 111 or n > 555:
                 print("Invalid number. Must be 111-555 only 1-5s")
                 continue

@@ -107,21 +107,5 @@ def print_number(n: int):
     )
 
 
-def print_evaluated_rules(evaluated_rules: list[list[any]]):
-    for title, guess, match in evaluated_rules:
-        if match:
-            print(
-                color_str(f"🗸 {title}", COLOR_GREEN)
-                + " for "
-                + color_str(str(guess), COLOR_WHITE)
-            )
-        else:
-            print(
-                color_str(f"✘ {title}", COLOR_RED)
-                + " for "
-                + color_str(str(guess), COLOR_WHITE)
-            )
-
-
 def clear_screen():
     print("\033[2J\033[H", end="")

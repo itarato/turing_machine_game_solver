@@ -40,14 +40,14 @@ class Cli:
     def __init__(self, problem: Problem):
         self.problem = problem
         self.solver = Solver(self.problem.secret)
+        self.evaluated_rules = []
 
     def run(self):
         clear_screen()
 
         guess = None
         attempt = 0
-        evaluated_rules = []
-        eliminator_on = False
+        eliminator_on = True
 
         while True:
             if guess is None:
@@ -85,7 +85,7 @@ class Cli:
                 else:
                     print(color_str("It's not a match", COLOR_RED))
 
-                evaluated_rules.append([rule.title(), guess, res])
+                self.evaluated_rules.append([rule.title(), guess, res])
             elif command == CMD_ANSWER:
                 answer = self.pick_number("Your guess is: ")
                 if answer == self.solver.secret:
@@ -109,7 +109,7 @@ class Cli:
             print_number(guess)
             if eliminator_on:
                 self.solver.draw_elimination_table()
-            print_evaluated_rules(evaluated_rules)
+            self.print_evaluated_rules()
 
     def pick_rule(self, allowed_rules: list[int]) -> None | Rule:
         options = []
@@ -154,3 +154,18 @@ class Cli:
         print(f"Secret: {solver.secret}")
         print(f"Eliminations left: {len(solver.available)}")
         print(solver.available)
+
+    def print_evaluated_rules(self):
+        for title, guess, match in self.evaluated_rules:
+            if match:
+                print(
+                    color_str(f"🗸 {title}", COLOR_GREEN)
+                    + " for "
+                    + color_str(str(guess), COLOR_WHITE)
+                )
+            else:
+                print(
+                    color_str(f"✘ {title}", COLOR_RED)
+                    + " for "
+                    + color_str(str(guess), COLOR_WHITE)
+                )

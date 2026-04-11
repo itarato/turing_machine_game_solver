@@ -240,3 +240,122 @@ class HasPair(Rule):
 
     def title(self):
         return "Has a pair?: _XX?"
+
+
+# Card 22
+# The Verifier verifies that the three numbers are in either ascending
+# order, descending order, or neither. For example, 223 is not ascending
+# (because the three numbers do not ascend, only two).
+class TotalOrder(Rule):
+    def computation(self, value):
+        digits = digit_list(value)
+        if digits[0] < digits[1] < digits[2]:
+            return -1
+        elif digits[0] > digits[1] > digits[2]:
+            return 1
+        else:
+            return 0
+
+    def title(self):
+        return "Total order: _▄█ / █▄_ / ▄_█"
+
+
+# Card 23
+# This card works in the same way as 19, but the Verifier compares
+# the sum of all the numbers with 6.
+class BlueYellowPurpleSumToSix(Rule):
+    def computation(self, value):
+        return comp(sum(digit_list(value)), 6)
+
+    def title(self):
+        return "Order of blue + yellow + purple compare to 6: B + Y + P < = > 6"
+
+
+# Card 24
+# The Verifier verifies that in the code there are consecutive increasing
+# values in either a 2-digit sequence (e.g.: 312), or a 3-digit sequence
+# (e.g.: 345), or none at all (e.g.: 132 - in this example the 1-3 sequence is
+# increasing, but 1 and 3 are not consecutive numbers.).
+class ConsecutiveIncreasingLength(Rule):
+    def computation(self, value):
+        digits = digit_list(value)
+
+        if digits[2] + 1 == digits[1] and digits[1] + 1 == digits[0]:
+            return 3
+        elif digits[2] + 1 == digits[1] or digits[1] + 1 == digits[0]:
+            return 2
+        else:
+            return 1
+
+    def title(self):
+        return "Consecutive increasing sequence length: 234 / _45 / ___"
+
+
+# Card 25
+# The Verifier verifies that there are either increasing or decreasing
+# values in a 2-digit consecutive sequence (e.g.: 312 or 254), a 3-digit
+# consecutive sequence (e.g.: 345 or 321), or none at all. (e.g.: 135 or
+# 531 - in this example the 1-3 sequence is increasing, but 1 and 3 are not
+# consecutive numbers).
+# The Verifier does not know if the sequence is increasing or decreasing.
+class ConsecutiveIncreasingOrDecreasingLength(Rule):
+    def computation(self, value):
+        digits = digit_list(value)
+
+        if (digits[2] + 1 == digits[1] and digits[1] + 1 == digits[0]) or (
+            digits[2] - 1 == digits[1] and digits[1] - 1 == digits[0]
+        ):
+            return 3
+        elif (
+            digits[2] + 1 == digits[1]
+            or digits[1] + 1 == digits[0]
+            or digits[2] - 1 == digits[1]
+            or digits[1] - 1 == digits[0]
+        ):
+            return 2
+        else:
+            return 1
+
+    def title(self):
+        return "Consecutive (inc or dec) sequence length: 234 or 321 / _45 or 21_ / ___"
+
+
+# Cards 26 to 27
+# The Verifier verifies that the number of a particular colour (that they
+# know) is less than 3 (e.g.: the number is less than 3).
+# Watch out! If the criteria is ‘the number is less than 3’, the other
+# colours’ numbers can also be less than 3... the Verifier is just not
+# verifying that.
+class DigitsLessThan(Rule):
+    def __init__(self, value: int):
+        super().__init__()
+        self.value = value
+
+    def computation(self, value):
+        digits = digit_list(value)
+        return [digits[0] < self.value, digits[1] < self.value, digits[2] < self.value]
+
+    def title(self):
+        return f"Digits less than {self.value}: B < {self.value} / Y < {self.value} / P < {self.value}"
+
+
+# Cards 28 to 30
+# The Verifier verifies that the number of a particular colour
+# (that they know) is 1. (e.g.: The number is 1.)
+# Watch out! The other colours’ numbers can also be 1...
+# the Verifier is just not verifying that.
+class DigitsEqualTo(Rule):
+    def __init__(self, value: int):
+        super().__init__()
+        self.value = value
+
+    def computation(self, value):
+        digits = digit_list(value)
+        return [
+            digits[0] == self.value,
+            digits[1] == self.value,
+            digits[2] == self.value,
+        ]
+
+    def title(self):
+        return f"Digits equal to {self.value}: B = {self.value} / Y = {self.value} / P = {self.value}"

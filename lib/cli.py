@@ -1,6 +1,8 @@
 from lib.common import *
 from lib.solver import *
 from lib.rules import *
+from lib.downloader import *
+import sys
 
 
 RULES = {
@@ -32,17 +34,21 @@ class Cli:
     def __init__(self):
         pass
 
-    def run(self):
-        solver = Solver(random_game_number())
+    def run(self, id: int):
+        problem = load_problem(id)
+        solver = Solver(problem.secret)
         guess = self.pick_number()
+        attempt = 0
 
         while True:
             command = input("Command (num, rule, answer, cheat): ")
 
             if command == "num":
                 guess = self.pick_number()
+                attempt = 0
             elif command == "rule":
-                rule = self.pick_rule()
+                attempt += 1
+                rule = self.pick_rule(problem.rules)
 
                 res = rule.analyze(solver, guess)
                 if res:
@@ -60,9 +66,13 @@ class Cli:
             else:
                 print(f"Unknown command `{command}`")
 
-    def pick_rule(self) -> Rule:
-        for k, v in RULES.items():
-            print(f"Rule #{k}: {v.title()}")
+    def pick_rule(self, allowed_rules: list[int]) -> Rule:
+        for i in allowed_rules:
+            if i not in RULES:
+                print(f"Rule {i} is not yet added")
+                exit()
+
+            print(f"Rule #{i}: {RULES[i].title()}")
 
         i = int(input("Rule #: "))
         return RULES[i]

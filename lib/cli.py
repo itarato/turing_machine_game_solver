@@ -55,6 +55,8 @@ class Cli:
                     print(color_str("It's a match", COLOR_GREEN))
                 else:
                     print(color_str("It's not a match", COLOR_RED))
+
+                draw_elimination_table(solver.available)
             elif command == "answer":
                 if guess == solver.secret:
                     print(color_str(f"YES YOU WON! IT WAS {guess}", COLOR_GREEN))
@@ -72,7 +74,7 @@ class Cli:
                 print(f"Rule {i} is not yet added")
                 exit()
 
-            print(f"Rule #{i}: {RULES[i].title()}")
+            print(color_str(f"Rule #{i}:", COLOR_BOLD) + " {RULES[i].title()}")
 
         i = int(input("Rule #: "))
         return RULES[i]

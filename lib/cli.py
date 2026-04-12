@@ -138,13 +138,15 @@ class Cli:
                 print(
                     color_str(f"🗸 {evaluated_rule.rule.title()}", COLOR_GREEN)
                     + " for "
-                    + color_str(str(evaluated_rule.guess), COLOR_WHITE)
+                    # + color_str(str(evaluated_rule.guess), COLOR_WHITE)
+                    + colorize_digits(evaluated_rule.guess)
                 )
             else:
                 print(
                     color_str(f"✘ {evaluated_rule.rule.title()}", COLOR_RED)
                     + " for "
-                    + color_str(str(evaluated_rule.guess), COLOR_WHITE)
+                    # + color_str(str(evaluated_rule.guess), COLOR_WHITE)
+                    + colorize_digits(evaluated_rule.guess)
                 )
 
     def print_number(self):

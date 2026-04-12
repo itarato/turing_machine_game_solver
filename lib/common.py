@@ -20,10 +20,24 @@ COLOR_GREY = 90
 COLOR_DIM = 2
 COLOR_BOLD = 1
 COLOR_WHITE = 97
+COLOR_BLACK = 30
+
+COLOR_BG_PURPLE = 105
+COLOR_BG_YELLOW = 103
+COLOR_BG_BLUE = 106
 
 
 def color_str(s: str, color: int) -> str:
     return f"\x1b[{color}m{s}\x1b[0m"
+
+
+def colorize_digits(num: int) -> str:
+    digits = digit_list(num)
+    return (
+        color_str(color_str(str(digits[2]), COLOR_BG_BLUE), COLOR_BLACK)
+        + color_str(color_str(str(digits[1]), COLOR_BG_YELLOW), COLOR_BLACK)
+        + color_str(color_str(str(digits[0]), COLOR_BG_PURPLE), COLOR_BLACK)
+    )
 
 
 def generate_available_numbers(digit: int = DIGIT_BLUE) -> list[int]:

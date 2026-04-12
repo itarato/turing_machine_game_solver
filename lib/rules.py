@@ -481,3 +481,23 @@ class DigitsCompareToValue(Rule):
 
     def title(self):
         return f"Digits compare to {self.midpoint}: B < = > {self.midpoint} / Y < = > {self.midpoint} / P < = > {self.midpoint}"
+
+
+# Card 42
+# The Verifier verifies that the number of a particular colour (that they
+# know) is either less than or greater than either of the others (e.g.:
+# The number is greater than the others).
+class DigitsSmallestOrGreatest(Rule):
+    def computation(self, value):
+        digits = digit_list(value)
+        return [
+            (digits[0] < digits[1] and digits[0] < digits[2])
+            or (digits[0] > digits[1] and digits[0] > digits[2],),
+            (digits[1] < digits[0] and digits[1] < digits[2])
+            or (digits[1] > digits[0] and digits[1] > digits[2],),
+            (digits[2] < digits[1] and digits[2] < digits[0])
+            or (digits[2] > digits[1] and digits[2] > digits[0],),
+        ]
+
+    def title(self):
+        return "Digit is smallest/greatest: B is min or max / Y is min or max / P is min or max"

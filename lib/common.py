@@ -34,9 +34,9 @@ def color_str(s: str, color: int) -> str:
 def colorize_digits(num: int) -> str:
     digits = digit_list(num)
     return (
-        color_str(color_str(str(digits[2]), COLOR_BG_BLUE), COLOR_BLACK)
-        + color_str(color_str(str(digits[1]), COLOR_BG_YELLOW), COLOR_BLACK)
-        + color_str(color_str(str(digits[0]), COLOR_BG_PURPLE), COLOR_BLACK)
+        color_str(color_str(f" {digits[2]} ", COLOR_BG_BLUE), COLOR_BLACK)
+        + color_str(color_str(f" {digits[1]} ", COLOR_BG_YELLOW), COLOR_BLACK)
+        + color_str(color_str(f" {digits[0]} ", COLOR_BG_PURPLE), COLOR_BLACK)
     )
 
 

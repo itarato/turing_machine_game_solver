@@ -359,3 +359,125 @@ class DigitsEqualTo(Rule):
 
     def title(self):
         return f"Digits equal to {self.value}: B = {self.value} / Y = {self.value} / P = {self.value}"
+
+
+# Cards 31 to 32
+# The Verifier verifies that the number of a particular colour
+# (that they know) is greater than 1.
+# Watch out! The other colours’ numbers can also be greater
+# than 1... the Verifier is just not verifying that.
+class DigitsGreaterThan(Rule):
+    def __init__(self, total: int):
+        super().__init__()
+        self.total = total
+
+    def computation(self, value):
+        digits = digit_list(value)
+        return [digits[0] > self.total, digits[1] > self.total, digits[2] > self.total]
+
+    def title(self):
+        return f"Digits greater than {self.total}: B > {self.total} / Y > {self.total} / P > {self.total}"
+
+
+# Card 33
+# The Verifier verifies that the number of a particular colour
+# (that they know) is odd or even. (e.g.: The number is even.)
+# Watch out! The other numbers can also be even (or odd, depending).
+class DigitsParity(Rule):
+    def computation(self, value):
+        digits = digit_list(value)
+        return [digits[0] % 2, digits[1] % 2, digits[2] % 2]
+
+    def title(self):
+        return "Digits parity: B % 2 / Y % 2 / P % 2"
+
+
+# Cards 34 to 35
+# The Verifier verifies that the number of a particular colour is less
+# than or equal to all the other numbers. (e.g.: They verify that no
+# other colour is less than .)
+class DigitsSmallestOrEqual(Rule):
+    def computation(self, value):
+        digits = digit_list(value)
+        return [
+            digits[0] <= digits[1] and digits[0] <= digits[2],
+            digits[1] <= digits[0] and digits[1] <= digits[2],
+            digits[2] <= digits[1] and digits[2] <= digits[0],
+        ]
+
+    def title(self):
+        return "Digits smallest or equal: B <= Y and P / Y <= B and P / P <= Y and B"
+
+
+# Cards 34 to 35
+# The Verifier verifies that the number of a particular colour is less
+# than or equal to all the other numbers. (e.g.: They verify that no
+# other colour is less than .)
+class DigitsGreatestOrEqual(Rule):
+    def computation(self, value):
+        digits = digit_list(value)
+        return [
+            digits[0] >= digits[1] and digits[0] >= digits[2],
+            digits[1] >= digits[0] and digits[1] >= digits[2],
+            digits[2] >= digits[1] and digits[2] >= digits[0],
+        ]
+
+    def title(self):
+        return "Digits greatest or equal: B >= Y and P / Y >= B and P / P >= Y and B"
+
+
+# Card 36
+# The Verifier verifies that the sum of all the numbers in the code
+# is a multiple of 3, or a multiple of 4, or a multiple of 5.
+class SumIsMultiple(Rule):
+    def computation(self, value):
+        digits = digit_list(value)
+        total = sum(digits)
+        return [
+            total % 3 == 0,
+            total % 4 == 0,
+            total % 5 == 0,
+        ]
+
+    def title(self):
+        return "Sum is multiple of 3 / 4 / 5: B+Y+P = 3x / 4x / 5x"
+
+
+# Cards 37 to 38
+# The Verifier verifies that the sum of two particular numbers
+# (that they know) is 4.
+class TwoSum(Rule):
+    def __init__(self, total: int):
+        super().__init__()
+        self.total = total
+
+    def computation(self, value):
+        digits = digit_list(value)
+        return [
+            digits[0] + digits[1] == self.total,
+            digits[0] + digits[2] == self.total,
+            digits[1] + digits[2] == self.total,
+        ]
+
+    def title(self):
+        return f"Sum of 2 digits is {self.total}: B+Y = {self.total} / B+P = {self.total} / P+Y = {self.total}"
+
+
+# Cards 39 to 41
+# The Verifier verifies that the number of a particular colour (that they
+# know) is less than, equal to, or greater than 1.
+class DigitsCompareToValue(Rule):
+    def __init__(self, midpoint: int):
+        super().__init__()
+        self.midpoint = midpoint
+
+    def computation(self, value):
+        digits = digit_list(value)
+        return [
+            comp(digits[0], self.midpoint),
+            comp(digits[1], self.midpoint),
+            comp(digits[2], self.midpoint),
+        ]
+
+    def title(self):
+        return f"Digits compare to {self.midpoint}: B < = > {self.midpoint} / Y < = > {self.midpoint} / P < = > {self.midpoint}"

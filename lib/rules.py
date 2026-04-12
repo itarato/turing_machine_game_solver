@@ -454,9 +454,9 @@ class TwoSum(Rule):
     def computation(self, value):
         digits = digit_list(value)
         return [
-            digits[0] + digits[1] == self.total,
-            digits[0] + digits[2] == self.total,
             digits[1] + digits[2] == self.total,
+            digits[0] + digits[2] == self.total,
+            digits[0] + digits[1] == self.total,
         ]
 
     def title(self):
@@ -474,9 +474,9 @@ class DigitsCompareToValue(Rule):
     def computation(self, value):
         digits = digit_list(value)
         return [
-            comp(digits[0], self.midpoint),
-            comp(digits[1], self.midpoint),
             comp(digits[2], self.midpoint),
+            comp(digits[1], self.midpoint),
+            comp(digits[0], self.midpoint),
         ]
 
     def title(self):
@@ -491,12 +491,12 @@ class DigitsSmallestOrGreatest(Rule):
     def computation(self, value):
         digits = digit_list(value)
         return [
-            (digits[0] < digits[1] and digits[0] < digits[2])
-            or (digits[0] > digits[1] and digits[0] > digits[2],),
-            (digits[1] < digits[0] and digits[1] < digits[2])
-            or (digits[1] > digits[0] and digits[1] > digits[2],),
             (digits[2] < digits[1] and digits[2] < digits[0])
-            or (digits[2] > digits[1] and digits[2] > digits[0],),
+            or (digits[2] > digits[1] and digits[2] > digits[0]),
+            (digits[1] < digits[0] and digits[1] < digits[2])
+            or (digits[1] > digits[0] and digits[1] > digits[2]),
+            (digits[0] < digits[1] and digits[0] < digits[2])
+            or (digits[0] > digits[1] and digits[0] > digits[2]),
         ]
 
     def title(self):
@@ -560,9 +560,9 @@ class TwoDigitsCompares(Rule):
     def computation(self, value):
         digits = digit_list(value)
         return [
-            comp(digits[0], digits[1]),
-            comp(digits[0], digits[2]),
             comp(digits[2], digits[1]),
+            comp(digits[2], digits[0]),
+            comp(digits[1], digits[0]),
         ]
 
     def title(self):

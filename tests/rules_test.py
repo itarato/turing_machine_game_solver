@@ -149,44 +149,47 @@ class RulesTest(unittest.TestCase):
         self.assertEqual(RULES[35].computation(123), [False, False, True])
         self.assertEqual(RULES[35].computation(122), [False, True, True])
 
-    # def test_36(self):
-    #     self.assertEqual(RULES[36].computation(123), [])
+    def test_36(self):
+        self.assertEqual(RULES[36].computation(123), [True, False, False])
+        self.assertEqual(RULES[36].computation(555), [True, False, True])
 
-    # def test_37(self):
-    #     self.assertEqual(RULES[37].computation(123), [])
+    def test_37(self):
+        self.assertEqual(RULES[37].computation(123), [False, True, False])
 
-    # def test_38(self):
-    #     self.assertEqual(RULES[38].computation(123), [])
+    def test_38(self):
+        self.assertEqual(RULES[38].computation(133), [False, False, True])
 
-    # def test_39(self):
-    #     self.assertEqual(RULES[39].computation(123), [])
+    def test_39(self):
+        self.assertEqual(RULES[39].computation(123), [ORD_EQ, ORD_GT, ORD_GT])
 
-    # def test_40(self):
-    #     self.assertEqual(RULES[40].computation(123), [])
+    def test_40(self):
+        self.assertEqual(RULES[40].computation(153), [ORD_LT, ORD_GT, ORD_EQ])
 
-    # def test_41(self):
-    #     self.assertEqual(RULES[41].computation(123), [])
+    def test_41(self):
+        self.assertEqual(RULES[41].computation(123), [ORD_LT, ORD_LT, ORD_LT])
 
-    # def test_42(self):
-    #     self.assertEqual(RULES[42].computation(123), [])
+    def test_42(self):
+        self.assertEqual(RULES[42].computation(123), [True, False, True])
 
-    # def test_43(self):
-    #     self.assertEqual(RULES[43].computation(123), [])
+    def test_43(self):
+        self.assertEqual(RULES[43].computation(123), [True, False, False])
+        self.assertEqual(RULES[43].computation(353), [True, True, False])
 
-    # def test_44(self):
-    #     self.assertEqual(RULES[44].computation(123), [])
+    def test_44(self):
+        self.assertEqual(RULES[44].computation(123), [True, False, True])
 
-    # def test_45(self):
-    #     self.assertEqual(RULES[45].computation(123), [])
+    def test_45(self):
+        self.assertEqual(RULES[45].computation(123), [False, True, False])
+        self.assertEqual(RULES[45].computation(233), [True, False, True])
 
-    # def test_46(self):
-    #     self.assertEqual(RULES[46].computation(123), [])
+    def test_46(self):
+        self.assertEqual(RULES[46].computation(523), [True, True, False])
 
-    # def test_47(self):
-    #     self.assertEqual(RULES[47].computation(123), [])
+    def test_47(self):
+        self.assertEqual(RULES[47].computation(523), [True, False, False])
 
-    # def test_48(self):
-    #     self.assertEqual(RULES[48].computation(123), [])
+    def test_48(self):
+        self.assertEqual(RULES[48].computation(122), [ORD_LT, ORD_LT, ORD_EQ])
 
 
 if __name__ == "__main__":

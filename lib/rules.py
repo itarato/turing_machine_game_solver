@@ -569,7 +569,7 @@ class TwoDigitsCompares(Rule):
         return "Two digits compared: B < = > Y / B < = > P / Y < = > P"
 
 
-RULES = {
+RULES: list[Rule] = {
     1: LeftPointOrdering(DIGIT_BLUE),
     2: MidpointOrdering(DIGIT_BLUE, 3),
     3: MidpointOrdering(DIGIT_YELLOW, 3),

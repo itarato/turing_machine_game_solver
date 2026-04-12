@@ -333,7 +333,7 @@ class DigitsLessThan(Rule):
 
     def computation(self, value):
         digits = digit_list(value)
-        return [digits[0] < self.value, digits[1] < self.value, digits[2] < self.value]
+        return [digits[2] < self.value, digits[1] < self.value, digits[0] < self.value]
 
     def title(self):
         return f"Digits less than {self.value}: B < {self.value} / Y < {self.value} / P < {self.value}"
@@ -352,9 +352,9 @@ class DigitsEqualTo(Rule):
     def computation(self, value):
         digits = digit_list(value)
         return [
-            digits[0] == self.value,
-            digits[1] == self.value,
             digits[2] == self.value,
+            digits[1] == self.value,
+            digits[0] == self.value,
         ]
 
     def title(self):
@@ -373,7 +373,7 @@ class DigitsGreaterThan(Rule):
 
     def computation(self, value):
         digits = digit_list(value)
-        return [digits[0] > self.total, digits[1] > self.total, digits[2] > self.total]
+        return [digits[2] > self.total, digits[1] > self.total, digits[0] > self.total]
 
     def title(self):
         return f"Digits greater than {self.total}: B > {self.total} / Y > {self.total} / P > {self.total}"
@@ -386,7 +386,7 @@ class DigitsGreaterThan(Rule):
 class DigitsParity(Rule):
     def computation(self, value):
         digits = digit_list(value)
-        return [digits[0] % 2, digits[1] % 2, digits[2] % 2]
+        return [digits[2] % 2, digits[1] % 2, digits[0] % 2]
 
     def title(self):
         return "Digits parity: B % 2 / Y % 2 / P % 2"
@@ -400,9 +400,9 @@ class DigitsSmallestOrEqual(Rule):
     def computation(self, value):
         digits = digit_list(value)
         return [
-            digits[0] <= digits[1] and digits[0] <= digits[2],
-            digits[1] <= digits[0] and digits[1] <= digits[2],
             digits[2] <= digits[1] and digits[2] <= digits[0],
+            digits[1] <= digits[0] and digits[1] <= digits[2],
+            digits[0] <= digits[1] and digits[0] <= digits[2],
         ]
 
     def title(self):
@@ -417,9 +417,9 @@ class DigitsGreatestOrEqual(Rule):
     def computation(self, value):
         digits = digit_list(value)
         return [
-            digits[0] >= digits[1] and digits[0] >= digits[2],
-            digits[1] >= digits[0] and digits[1] >= digits[2],
             digits[2] >= digits[1] and digits[2] >= digits[0],
+            digits[1] >= digits[0] and digits[1] >= digits[2],
+            digits[0] >= digits[1] and digits[0] >= digits[2],
         ]
 
     def title(self):

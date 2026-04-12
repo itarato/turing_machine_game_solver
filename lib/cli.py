@@ -133,6 +133,11 @@ class Cli:
         print(solver.available)
 
     def print_evaluated_rules(self):
+        if len(self.evaluated_rules) == 0:
+            return
+
+        print("═══════════════")
+
         for evaluated_rule in self.evaluated_rules:
             if evaluated_rule.match:
                 print(
@@ -148,6 +153,8 @@ class Cli:
                     # + color_str(str(evaluated_rule.guess), COLOR_WHITE)
                     + colorize_digits(evaluated_rule.guess)
                 )
+
+        print("═══════════════")
 
     def print_number(self):
         if self.guess is None:

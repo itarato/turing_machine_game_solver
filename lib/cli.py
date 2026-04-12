@@ -53,6 +53,9 @@ RULES = {
     39: DigitsCompareToValue(1),
     40: DigitsCompareToValue(3),
     41: DigitsCompareToValue(4),
+    42: DigitsSmallestOrGreatest(),
+    43: DigitCompareToOthersEither(DIGIT_BLUE),
+    44: DigitCompareToOthersEither(DIGIT_YELLOW),
 }
 
 

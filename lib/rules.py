@@ -501,3 +501,35 @@ class DigitsSmallestOrGreatest(Rule):
 
     def title(self):
         return "Digit is smallest/greatest: B is min or max / Y is min or max / P is min or max"
+
+
+# Cards 43 to 44
+# The Verifier verifies that the number is less than, equal to,
+# or greater than another particular number (that they know)
+class DigitCompareToOthersEither(Rule):
+    def __init__(self, digit: int):
+        super().__init__()
+        self.digit = digit
+
+    def computation(self, value):
+        digits = digit_list(value)
+        subject = digits[self.digit]
+        digit1 = (self.digit + 1) % 3
+        digit2 = (self.digit + 2) % 3
+        v1 = digits[digit1]
+        v2 = digits[digit2]
+        return [
+            subject < v1 or subject < v2,
+            subject == v1 or subject == v2,
+            subject > v1 or subject > v2,
+        ]
+
+    def title(self):
+        digit1 = (self.digit + 1) % 3
+        digit2 = (self.digit + 2) % 3
+        return f"{digit_name(self.digit)} compare to either other colors: {digit_name(self.digit)[:1]} < {digit_name(digit1)[:1]} or {digit_name(digit2)[:1]} / {digit_name(self.digit)[:1]} = {digit_name(digit1)[:1]} or {digit_name(digit2)[:1]} / {digit_name(self.digit)[:1]} > {digit_name(digit1)[:1]} or {digit_name(digit2)[:1]}"
+
+
+# Cards 45 to 47
+# The Verifier verifies that the number of 1s or the number of 3s
+# in the code is equal to a particular number (that they know).

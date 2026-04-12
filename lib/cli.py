@@ -56,6 +56,10 @@ RULES = {
     42: DigitsSmallestOrGreatest(),
     43: DigitCompareToOthersEither(DIGIT_BLUE),
     44: DigitCompareToOthersEither(DIGIT_YELLOW),
+    45: CountOfTwoNumbers(1, 3),
+    46: CountOfTwoNumbers(3, 4),
+    47: CountOfTwoNumbers(1, 4),
+    48: TwoDigitsCompares(),
 }
 
 

@@ -533,3 +533,37 @@ class DigitCompareToOthersEither(Rule):
 # Cards 45 to 47
 # The Verifier verifies that the number of 1s or the number of 3s
 # in the code is equal to a particular number (that they know).
+class CountOfTwoNumbers(Rule):
+    def __init__(self, num1: int, num2: int):
+        super().__init__()
+        self.num1 = num1
+        self.num2 = num2
+
+    def computation(self, value):
+        digits = digit_list(value)
+        return [
+            digits.count(self.num1) == 0 or digits.count(self.num2) == 0,
+            digits.count(self.num1) == 1 or digits.count(self.num2) == 1,
+            digits.count(self.num1) == 2 or digits.count(self.num2) == 2,
+        ]
+
+    def title(self):
+        return f"Count of {self.num1} OR {self.num2}: ___ or ___ / _{self.num1}_ or {self.num2}__ / {self.num1}_{self.num1} or {self.num2}{self.num2}_"
+
+
+# Card 48
+# The Verifier verifies that that the number of a particular colour
+# (that they know) is either less than, equal to, or greater than
+# that of another particular colour (that they know). (e.g.: the
+# number is greater than the number.)
+class TwoDigitsCompares(Rule):
+    def computation(self, value):
+        digits = digit_list(value)
+        return [
+            comp(digits[0], digits[1]),
+            comp(digits[0], digits[2]),
+            comp(digits[2], digits[1]),
+        ]
+
+    def title(self):
+        return "Two digits compared: B < = > Y / B < = > P / Y < = > P"

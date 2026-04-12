@@ -25,7 +25,7 @@ class Cli:
         self.solver = Solver(self.problem.secret)
         self.evaluated_rules: list[EvaluatedRule] = []
         self.guess: None | int = None
-        self.eliminator_on: bool = True
+        self.eliminator_on: bool = False
         self.attempt: int = 0
 
     def run(self):
@@ -71,10 +71,10 @@ class Cli:
             elif command == CMD_ANSWER:
                 answer = self.pick_number("Your guess is: ")
                 if answer == self.solver.secret:
-                    print(color_str(f"YES YOU WON! IT WAS {answer}", COLOR_GREEN))
+                    print(color_str(f"Correct answer! Good bye!", COLOR_GREEN))
                     exit()
                 else:
-                    print(color_str(f"NO! IT'S NOT {answer}", COLOR_RED))
+                    print(color_str(f"Bad answer. Try again!", COLOR_RED))
                 continue
             elif command == CMD_CHEAT:
                 self.dump_solver_state(self.solver)

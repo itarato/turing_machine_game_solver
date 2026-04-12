@@ -95,7 +95,7 @@ class NumberOrDigits(Rule):
         return digit_list(value).count(self.n)
 
     def title(self) -> str:
-        return f"Number of digits: ___ / _{self.n}_ / {self.n}{self.n}_ / {self.n}{self.n}{self.n}"
+        return f"Number of {self.n}s: ___ / _{self.n}_ / {self.n}{self.n}_ / {self.n}{self.n}{self.n}"
 
 
 # Cards 11 to 13
